@@ -35,8 +35,8 @@ require("./routes/orders.routes")(app);
 require("./routes/file.routes")(app);
 
 // set port, listen for requests
-const PORT = process.env.NODE_ENV === "production" ? process.env.PG_PORT : process.env.PORT || 8080;
-console.log('port---->', PORT)
-app.listen(PORT, () => {
-    console.log('Server is running on port' + ' ' + PORT);
+// const PORT = process.env.NODE_ENV === "production" ? process.env.PG_PORT : process.env.PORT || 8080;
+// console.log('port---->', PORT)
+app.listen(process.env.PORT || 8080, function(){
+    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
