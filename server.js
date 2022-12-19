@@ -35,7 +35,7 @@ require("./routes/orders.routes")(app);
 require("./routes/file.routes")(app);
 
 // set port, listen for requests
-const PORT = process.env.NODE_ENV === "production" ? process.env.PG_PORT : process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
-});
+// const PORT = process.env.NODE_ENV === "production" ? process.env.PG_PORT : process.env.PORT || 8080;
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}.`);
+// });

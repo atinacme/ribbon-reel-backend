@@ -13,8 +13,8 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     },
     dialectOptions: {
         ssl: {
-            require: true,
-            rejectUnauthorized: false
+            require: dbConfig.dialectOptions.ssl.require,
+            rejectUnauthorized: dbConfig.dialectOptions.ssl.rejectUnauthorized
         }
     },
 });
