@@ -9,12 +9,12 @@ module.exports = {
     PASSWORD: isProduction ? process.env.PG_PASSWORD : "12345",
     DB: isProduction ? process.env.PG_DATABASE : "postgres",
     dialect: "postgres",
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false
-        }
-    },
+    // dialectOptions: {
+    //     ssl: {
+    //         require: false,
+    //         rejectUnauthorized: false
+    //     }
+    // },
     pool: {
         max: 5,
         min: 0,
