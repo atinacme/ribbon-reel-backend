@@ -18,8 +18,7 @@ exports.create = (req, res) => {
         store_name: req.body.store_name,
         account_email: req.body.account_email,
         layout: req.body.layout,
-        subscription_plan: req.body.subscription_plan,
-        notifications: req.body.notifications
+        subscription_plan: req.body.subscription_plan
     };
 
     // Save Onboarding in the database
@@ -55,7 +54,6 @@ exports.findAll = (req, res) => {
 // Update a Onboarding by the store_name in the request
 exports.update = (req, res) => {
     const store_name = req.params.store_name;
-
     Onboarding.update(req.body, {
         where: { store_name: store_name }
     })

@@ -6,8 +6,8 @@ var transporter = nodemailer.createTransport({
     port: 465,
     secure: true, // use SSL
     auth: {
-        user: 'bhupendra.221singh@gmail.com',
-        pass: 'euzatrngdefpdwqm'
+        user: 'atinacme1621@gmail.com',
+        pass: 'tdfvnklfrpglmztk'
     }
 });
 
@@ -87,7 +87,7 @@ exports.findAll = (req, res) => {
 
 exports.mail = (req, res) => {
     const mailConfigurations = {
-        from: 'bhupendra.221singh@gmail.com',
+        from: 'atinacme1621@gmail.com',
         to: req.body.mail_to,
         subject: 'Add Video Message',
         text: `Hi! ${req.body.store_owner}, if you want to add video message use the below link:

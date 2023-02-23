@@ -15,8 +15,17 @@ module.exports = (sequelize, Sequelize) => {
         subscription_plan: {
             type: Sequelize.STRING
         },
-        notifications: {
-            type: Sequelize.STRING
+        marketing_notifications: {
+            type: Sequelize.STRING,
+            defaultValue: true
+        },
+        order_notifications: {
+            type: Sequelize.STRING,
+            defaultValue: true
+        },
+        update_notifications: {
+            type: Sequelize.STRING,
+            defaultValue: false
         }
     });
 
