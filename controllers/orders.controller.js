@@ -20,6 +20,7 @@ exports.create = (req, res) => {
     });
 
     req.body.forEach(element => {
+        // console.log('element---->',element)
         const order_id = element.order_id;
         var condition = order_id ? { order_id: { [Op.iLike]: `%${order_id}%` } } : null;
         var reel_status;
@@ -45,7 +46,7 @@ exports.create = (req, res) => {
             order_id: element.id,
             order_number: element.order_number,
             date: element.created_at,
-            customer: element.customer.first_name + " " + element.customer.last_name,
+            sender_name: element.customer.first_name + " " + element.customer.last_name,
             receiver_email: element.note_attributes.length > 0 ? element.note_attributes.map((item) => {
                 if (item.name === 'receiver_email') {
                     return item.value;
@@ -90,8 +91,8 @@ exports.mail = (req, res) => {
         from: 'atinacme1621@gmail.com',
         to: req.body.mail_to,
         subject: 'Add Video Message',
-        text: `Hi! ${req.body.store_owner}, if you want to add video message use the below link:
-        http://localhost:3000?order_number=${req.body.order_number}`
+        text: `Hi! ${req.body.sender_name}, if you want to add video message use the below link:
+        http://localhost:3000?order_id=${req.body.order_id}?sender_name=${req.body.sender_name}`
     };
 
     transporter.sendMail(mailConfigurations, function (error, info) {

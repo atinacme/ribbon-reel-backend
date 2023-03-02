@@ -6,6 +6,9 @@ module.exports = (sequelize, Sequelize) => {
         store_owner: {
             type: Sequelize.STRING
         },
+        sender_name: {
+            type: Sequelize.STRING
+        },
         sender_email: {
             type: Sequelize.STRING
         },
@@ -18,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
         date: {
             type: Sequelize.STRING
         },
-        customer: {
+        receiver_name: {
             type: Sequelize.STRING
         },
         receiver_email: {

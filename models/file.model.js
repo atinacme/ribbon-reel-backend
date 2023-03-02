@@ -12,6 +12,15 @@ module.exports = (sequelize, Sequelize) => {
         reel_status: {
             type: Sequelize.STRING,
             defaultValue: 'pending'
+        },
+        sender_name: {
+            type: Sequelize.STRING
+        },
+        receiver_name: {
+            type: Sequelize.STRING
+        },
+        receiver_email: {
+            type: Sequelize.STRING
         }
     });
 

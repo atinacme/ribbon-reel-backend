@@ -3,10 +3,21 @@ const db = require("../models");
 const fs = require('fs');
 const File = db.files;
 const Op = db.Sequelize.Op;
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // use SSL
+    auth: {
+        user: 'atinacme1621@gmail.com',
+        pass: 'tdfvnklfrpglmztk'
+    }
+});
 const baseUrl = 'http://localhost:8080/api/file/files/';
 
 const upload = async (req, res) => {
     try {
+        console.log("req--->", req.body)
         await uploadFile(req, res);
         if (req.file == undefined) {
             return res.status(400).send({ message: "Please upload a file!" });
@@ -14,12 +25,27 @@ const upload = async (req, res) => {
         const file = {
             order_id: req.body.order_id,
             filename: req.file.originalname,
-            filepath: req.file.path
+            filepath: req.file.path,
+            sender_name: req.body.sender_name,
+            receiver_name: req.body.receiver_name,
+            receiver_email: req.body.receiver_email
         };
         File.create(file)
             .then(data => {
                 res.status(200).send({
                     message: "Uploaded the file successfully: " + req.file.originalname,
+                });
+                const mailConfigurations = {
+                    from: 'atinacme1621@gmail.com',
+                    to: req.body.receiver_email,
+                    subject: 'Gift Video Message',
+                    text: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a video message for the gift please click on the below link to view:
+                    http://localhost:3001?order_id=${req.body.order_id}?receiver_name=${req.body.receiver_name}`
+                };
+            
+                transporter.sendMail(mailConfigurations, function (error, info) {
+                    if (error) throw Error(error);
+                    res.send(info);
                 });
             })
             .catch(err => {
