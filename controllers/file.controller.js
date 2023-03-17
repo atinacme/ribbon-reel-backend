@@ -3,50 +3,109 @@ const db = require("../models");
 const fs = require('fs');
 const File = db.files;
 const Op = db.Sequelize.Op;
-var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // use SSL
-    auth: {
-        user: 'atinacme1621@gmail.com',
-        pass: 'tdfvnklfrpglmztk'
-    }
-});
+var sgMail = require('@sendgrid/mail');
+sgMail.setApiKey('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');
+const parsePhoneNumber = require("libphonenumber-js/min")
+const accountSid = 'ACd543b7bcb76e0e7ce9eff99e28689668';
+const authToken = '1c313a3676c13526b5a345b5c960b344';
+const twilioClient = require("twilio")(accountSid, authToken);
 const baseUrl = 'http://localhost:8080/api/file/files/';
 
 const upload = async (req, res) => {
     try {
-        console.log("req--->", req.body)
         await uploadFile(req, res);
         if (req.file == undefined) {
             return res.status(400).send({ message: "Please upload a file!" });
         }
         const file = {
             order_id: req.body.order_id,
-            filename: req.file.originalname,
+            filename: req.file.filename,
             filepath: req.file.path,
+            send_by: req.body.send_by,
             sender_name: req.body.sender_name,
+            sender_email: req.body.sender_email,
+            sender_phone: req.body.sender_phone,
             receiver_name: req.body.receiver_name,
-            receiver_email: req.body.receiver_email
+            receiver_contact: req.body.receiver_contact,
+            receiver_contact_type: req.body.receiver_contact_type
         };
         File.create(file)
             .then(data => {
                 res.status(200).send({
-                    message: "Uploaded the file successfully: " + req.file.originalname,
+                    message: "Uploaded the file successfully: " + req.file.filename,
                 });
-                const mailConfigurations = {
-                    from: 'atinacme1621@gmail.com',
-                    to: req.body.receiver_email,
-                    subject: 'Gift Video Message',
-                    text: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a video message for the gift please click on the below link to view:
-                    http://localhost:3001?order_id=${req.body.order_id}?receiver_name=${req.body.receiver_name}`
-                };
-            
-                transporter.sendMail(mailConfigurations, function (error, info) {
-                    if (error) throw Error(error);
-                    res.send(info);
-                });
+                if (req.body.send_by === "gifter") {
+                    if (req.body.receiver_contact_type === 'email') {
+                        const msg = {
+                            to: req.body.receiver_contact,
+                            from: 'atinacme1621@gmail.com', // Use the email address or domain you verified above
+                            subject: 'Gift Video Message',
+                            text: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a video message for the gift please click on the below link to view:
+                        http://localhost:3001?${req.body.order_id}/gifter`
+                        };
+                        sgMail
+                            .send(msg)
+                            .then((data) => {
+                                console.log("mail sent");
+                            }, error => {
+                                console.error(error);
+                                if (error.response) {
+                                    console.error(error.response.body)
+                                }
+                            });
+                    } else {
+                        twilioClient.messages.create({
+                            from: "+15076695356",
+                            to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
+                            body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a video message for the gift please click on the below link to view:
+                                http://localhost:3001?${req.body.order_id}/gifter`
+                        });
+                    }
+                } else {
+                    const msg = {
+                        to: req.body.receiver_contact,
+                        from: 'atinacme1621@gmail.com', // Use the email address or domain you verified above
+                        subject: 'Revert Gift Video Message',
+                        text: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
+                        http://localhost:3001?${req.body.order_id}/receipient`
+                    };
+                    if (req.body.receiver_contact_type === 'email/phone') {
+                        sgMail
+                            .send(msg)
+                            .then((data) => {
+                                console.log("mail sent");
+                                twilioClient.messages.create({
+                                    from: "+15076695356",
+                                    to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
+                                    body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
+                                http://localhost:3001?${req.body.order_id}/receipient`
+                                });
+                            }, error => {
+                                console.error(error);
+                                if (error.response) {
+                                    console.error(error.response.body)
+                                }
+                            });
+                    } else if (req.body.receiver_contact_type === 'email') {
+                        sgMail
+                            .send(msg)
+                            .then((data) => {
+                                console.log("mail sent");
+                            }, error => {
+                                console.error(error);
+                                if (error.response) {
+                                    console.error(error.response.body)
+                                }
+                            });
+                    } else {
+                        twilioClient.messages.create({
+                            from: "+15076695356",
+                            to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
+                            body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
+                            http://localhost:3001?${req.body.order_id}/receipient`
+                        });
+                    }
+                }
             })
             .catch(err => {
                 res.status(500).send({
@@ -61,18 +120,52 @@ const upload = async (req, res) => {
             });
         }
         res.status(500).send({
-            message: `Could not upload the file: ${req.file.originalname}. ${err}`,
+            message: `Could not upload the file: ${req.file.filename}. ${err}`,
         });
     }
 };
 
 // Retrieve all Files of Particular Order Number from the database.
-const findFile = (req, res) => {
-    const order_id = req.body.order_id;
-    var condition = order_id ? { order_id: { [Op.iLike]: `%${order_id}%` } } : null;
 
-    File.findAll({ where: condition })
+const findFile = (req, res) => {
+    const order_id = req.params.order_id;
+    const send_by = req.params.send_by;
+
+    File.findOne({ raw: true, $and: [{ "order_id": order_id }, { "send_by": send_by }] })
         .then(data => {
+            data["file"] = baseUrl + data.filename;
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving file."
+            });
+        });
+};
+
+const findFileGifter = (req, res) => {
+    const order_id = req.params.order_id;
+
+    File.findOne({ raw: true, where: [{ "order_id": order_id }, { "send_by": 'gifter' }] })
+        .then(data => {
+            data["file"] = baseUrl + data.filename;
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving file."
+            });
+        });
+};
+
+const findFileReceipient = (req, res) => {
+    const order_id = req.params.order_id;
+
+    File.findOne({ raw: true, where: [{ "order_id": order_id }, { "send_by": 'receipient' }] })
+        .then(data => {
+            data["file"] = baseUrl + data.filename;
             res.send(data);
         })
         .catch(err => {
@@ -121,6 +214,8 @@ const download = (req, res) => {
 module.exports = {
     upload,
     findFile,
+    findFileGifter,
+    findFileReceipient,
     getListFiles,
     download,
 };

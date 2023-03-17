@@ -13,13 +13,25 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             defaultValue: 'pending'
         },
+        send_by: {
+            type: Sequelize.STRING
+        },
         sender_name: {
+            type: Sequelize.STRING
+        },
+        sender_email: {
+            type: Sequelize.STRING
+        },
+        sender_phone: {
             type: Sequelize.STRING
         },
         receiver_name: {
             type: Sequelize.STRING
         },
-        receiver_email: {
+        receiver_contact: {
+            type: Sequelize.STRING
+        },
+        receiver_contact_type: {
             type: Sequelize.STRING
         }
     });

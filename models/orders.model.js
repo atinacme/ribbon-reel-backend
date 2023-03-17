@@ -12,6 +12,9 @@ module.exports = (sequelize, Sequelize) => {
         sender_email: {
             type: Sequelize.STRING
         },
+        sender_phone: {
+            type: Sequelize.STRING
+        },
         order_id: {
             type: Sequelize.BIGINT
         },
@@ -24,7 +27,7 @@ module.exports = (sequelize, Sequelize) => {
         receiver_name: {
             type: Sequelize.STRING
         },
-        receiver_email: {
+        receiver_contact: {
             type: Sequelize.STRING
         },
         total: {

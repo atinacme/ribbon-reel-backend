@@ -5,7 +5,11 @@ module.exports = app => {
 
     router.post("/upload", file.upload);
 
-    router.post("/findFile", file.findFile);
+    router.get("/findFile/:order_id/:send_by", file.findFile);
+
+    router.get("/findFileGifter/:order_id", file.findFileGifter);
+
+    router.get("/findFileReceipient/:order_id", file.findFileReceipient);
 
     router.get("/files", file.getListFiles);
 
