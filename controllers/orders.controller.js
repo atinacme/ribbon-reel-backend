@@ -2,10 +2,10 @@ const db = require("../models");
 const Op = db.Sequelize.Op;
 const Order = db.orders;
 var sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('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');
+sgMail.setApiKey(process.env.SENDGRID_KEY);
 const parsePhoneNumber = require("libphonenumber-js/min")
-const accountSid = 'ACd543b7bcb76e0e7ce9eff99e28689668';
-const authToken = '1c313a3676c13526b5a345b5c960b344';
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioClient = require("twilio")(accountSid, authToken);
 
 // Create and Save a new Order

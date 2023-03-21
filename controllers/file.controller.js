@@ -4,10 +4,10 @@ const fs = require('fs');
 const File = db.files;
 const Op = db.Sequelize.Op;
 var sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('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');
+sgMail.setApiKey(process.env.SENDGRID_KEY);
 const parsePhoneNumber = require("libphonenumber-js/min")
-const accountSid = 'ACd543b7bcb76e0e7ce9eff99e28689668';
-const authToken = '1c313a3676c13526b5a345b5c960b344';
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioClient = require("twilio")(accountSid, authToken);
 const baseUrl = 'http://localhost:8080/api/file/files/';
 
