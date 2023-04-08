@@ -9,7 +9,7 @@ const parsePhoneNumber = require("libphonenumber-js/min")
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioClient = require("twilio")(accountSid, authToken);
-const baseUrl = 'http://localhost:8080/api/file/files/';
+const baseUrl = `${process.env.BASE_URL}/api/file/files/`;
 
 const upload = async (req, res) => {
     try {
@@ -38,10 +38,10 @@ const upload = async (req, res) => {
                     if (req.body.receiver_contact_type === 'email') {
                         const msg = {
                             to: req.body.receiver_contact,
-                            from: 'atinacme1621@gmail.com', // Use the email address or domain you verified above
+                            from: process.env.SENDGRID_EMAIL, // Use the email address or domain you verified above
                             subject: 'Gift Video Message',
                             text: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a video message for the gift please click on the below link to view:
-                        http://localhost:3001?${req.body.order_id}/gifter`
+                        ${process.env.RECEPIENT_URL}?${req.body.order_id}/gifter`
                         };
                         sgMail
                             .send(msg)
@@ -55,19 +55,19 @@ const upload = async (req, res) => {
                             });
                     } else {
                         twilioClient.messages.create({
-                            from: "+15076695356",
+                            from: process.env.TWILIO_PHONE_NO,
                             to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
                             body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a video message for the gift please click on the below link to view:
-                                http://localhost:3001?${req.body.order_id}/gifter`
+                            ${process.env.RECEPIENT_URL}?${req.body.order_id}/gifter`
                         });
                     }
                 } else {
                     const msg = {
                         to: req.body.receiver_contact,
-                        from: 'atinacme1621@gmail.com', // Use the email address or domain you verified above
+                        from: process.env.SENDGRID_EMAIL, // Use the email address or domain you verified above
                         subject: 'Revert Gift Video Message',
                         text: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
-                        http://localhost:3001?${req.body.order_id}/receipient`
+                        ${process.env.RECEPIENT_URL}?${req.body.order_id}/receipient`
                     };
                     if (req.body.receiver_contact_type === 'email/phone') {
                         sgMail
@@ -75,10 +75,10 @@ const upload = async (req, res) => {
                             .then((data) => {
                                 console.log("mail sent");
                                 twilioClient.messages.create({
-                                    from: "+15076695356",
+                                    from: process.env.TWILIO_PHONE_NO,
                                     to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
                                     body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
-                                http://localhost:3001?${req.body.order_id}/receipient`
+                                    ${process.env.RECEPIENT_URL}?${req.body.order_id}/receipient`
                                 });
                             }, error => {
                                 console.error(error);
@@ -99,10 +99,10 @@ const upload = async (req, res) => {
                             });
                     } else {
                         twilioClient.messages.create({
-                            from: "+15076695356",
+                            from: process.env.TWILIO_PHONE_NO,
                             to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
                             body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
-                            http://localhost:3001?${req.body.order_id}/receipient`
+                            ${process.env.RECEPIENT_URL}?${req.body.order_id}/receipient`
                         });
                     }
                 }

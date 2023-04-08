@@ -101,20 +101,20 @@ exports.findParticularOrder = (req, res) => {
 exports.mailAndMessage = (req, res) => {
     const msg = {
         to: req.body.mail_to,
-        from: 'atinacme1621@gmail.com', // Use the email address or domain you verified above
+        from: process.env.SENDGRID_EMAIL, // Use the email address or domain you verified above
         subject: 'Add Video Message',
         text: `Hi! ${req.body.sender_name}, if you want to add video message use the below link:
-        http://localhost:3000?${req.body.order_id}`
+        ${process.env.GIFTER_URL}?${req.body.order_id}`
     };
     sgMail
         .send(msg)
         .then(() => {
             console.error("mail sent");
             twilioClient.messages.create({
-                from: "+15076695356",
+                from: process.env.TWILIO_PHONE_NO,
                 to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
                 body: `Hi! ${req.body.sender_name}, if you want to add video message use the below link:
-                http://localhost:3000?${req.body.order_id}`
+                ${process.env.GIFTER_URL}?${req.body.order_id}`
             });
         }, error => {
             console.error(error);
