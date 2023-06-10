@@ -1,7 +1,6 @@
 require("dotenv").config();
 
 const isProduction = process.env.NODE_ENV === "production";
-console.log('prod---->', isProduction);
 
 module.exports = {
     HOST: isProduction ? process.env.PG_HOST : "localhost",

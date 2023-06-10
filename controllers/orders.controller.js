@@ -1,6 +1,7 @@
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const Order = db.orders;
+const File = db.files;
 var sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_KEY);
 const parsePhoneNumber = require("libphonenumber-js/min")
@@ -11,32 +12,27 @@ const twilioClient = require("twilio")(accountSid, authToken);
 // Create and Save a new Order
 exports.create = (req, res) => {
     var orders;
-    Order.destroy({
-        where: {},
-        truncate: false
-    });
-
+    // Order.destroy({
+    //     where: {},
+    //     truncate: false
+    // });
+    // console.log("wdjgdw---->", req.body)
     req.body.forEach(element => {
-        const order_id = element.order_id;
-        var condition = order_id ? { order_id: { [Op.iLike]: `%${order_id}%` } } : null;
-        var reel_status;
+        // console.log("ddcxs---->", element)
+        // const order_id = element.id;
+        // var condition = order_id ? { order_id: { [Op.iLike]: `%${order_id}%` } } : null;
+        // var reel_status;
 
-        if (condition !== null) {
-            File.findAll({ where: condition })
-                .then(data => {
-                    reel_status = res.send(data[0].reel_status);
-                })
-                .catch(err => {
-                    res.status(500).send({
-                        message:
-                            err.message || "Some error occurred while retrieving file."
-                    });
-                });
-        } else {
-            reel_status = 'pending';
-        }
+        // if (condition !== null) {
+        //     File.findAll({ where: condition })
+        //         .then(data => {
+        //             reel_status = data[0].reel_status;
+        //         })
+        // } else {
+        //     reel_status = 'pending';
+        // }
         const order = {
-            store_name: element.session.shop,
+            store_name: element.shop,
             store_owner: element.store_owner,
             sender_email: element.contact_email,
             sender_phone: element.customer.phone,
@@ -52,7 +48,7 @@ exports.create = (req, res) => {
             total: element.total_price,
             reel_revenue: element.reel_revenue,
             shipping_status: element.fulfillment_status,
-            reel_status: element.reel_status,
+            reel_status: element.reel_status ? element.reel_status : null,
             items: element.line_items.length
         };
         // Save Order in the database
