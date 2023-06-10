@@ -11,6 +11,7 @@ const twilioClient = require("twilio")(accountSid, authToken);
 
 // Create and Save a new Order
 exports.create = (req, res) => {
+    console.log('prod---->', process.env.GIFTER_URL, process.env.RECEPIENT_URL);
     var orders;
     // Order.destroy({
     //     where: {},
@@ -67,6 +68,7 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
+    console.log('prod---->', process.env.GIFTER_URL, process.env.RECEPIENT_URL);
     Order.findAll()
         .then(data => {
             res.send(data);
@@ -80,6 +82,7 @@ exports.findAll = (req, res) => {
 };
 
 exports.findParticularOrder = (req, res) => {
+    console.log('prod---->', process.env.GIFTER_URL, process.env.RECEPIENT_URL);
     const order_id = req.body.order_id;
     var condition = order_id ? { order_id: { [Op.iLike]: `%${order_id}%` } } : null;
     Order.findAll({ where: condition })
@@ -95,6 +98,7 @@ exports.findParticularOrder = (req, res) => {
 };
 
 exports.mailAndMessage = (req, res) => {
+    console.log('prod---->', process.env.GIFTER_URL, process.env.RECEPIENT_URL);
     const msg = {
         to: req.body.mail_to,
         from: process.env.SENDGRID_EMAIL, // Use the email address or domain you verified above
