@@ -5,7 +5,7 @@ const File = db.files;
 const Op = db.Sequelize.Op;
 var sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_KEY);
-const parsePhoneNumber = require("libphonenumber-js/min")
+const parsePhoneNumber = require("libphonenumber-js/min");
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioClient = require("twilio")(accountSid, authToken);
@@ -50,16 +50,18 @@ const upload = async (req, res) => {
                             }, error => {
                                 console.error(error);
                                 if (error.response) {
-                                    console.error(error.response.body)
+                                    console.error(error.response.body);
                                 }
                             });
                     } else {
-                        twilioClient.messages.create({
-                            from: process.env.TWILIO_PHONE_NO,
-                            to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
-                            body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a video message for the gift please click on the below link to view:
+                        if (req.body.sender_phone !== null || undefined || '') {
+                            twilioClient.messages.create({
+                                from: process.env.TWILIO_PHONE_NO,
+                                to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
+                                body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a video message for the gift please click on the below link to view:
                             ${process.env.RECEPIENT_URL}?${req.body.order_id}/gifter`
-                        });
+                            });
+                        }
                     }
                 } else {
                     const msg = {
@@ -74,16 +76,18 @@ const upload = async (req, res) => {
                             .send(msg)
                             .then((data) => {
                                 console.log("mail sent");
-                                twilioClient.messages.create({
-                                    from: process.env.TWILIO_PHONE_NO,
-                                    to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
-                                    body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
+                                if (req.body.sender_phone !== null || undefined || '') {
+                                    twilioClient.messages.create({
+                                        from: process.env.TWILIO_PHONE_NO,
+                                        to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
+                                        body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
                                     ${process.env.RECEPIENT_URL}?${req.body.order_id}/receipient`
-                                });
+                                    });
+                                }
                             }, error => {
                                 console.error(error);
                                 if (error.response) {
-                                    console.error(error.response.body)
+                                    console.error(error.response.body);
                                 }
                             });
                     } else if (req.body.receiver_contact_type === 'email') {
@@ -94,16 +98,18 @@ const upload = async (req, res) => {
                             }, error => {
                                 console.error(error);
                                 if (error.response) {
-                                    console.error(error.response.body)
+                                    console.error(error.response.body);
                                 }
                             });
                     } else {
-                        twilioClient.messages.create({
-                            from: process.env.TWILIO_PHONE_NO,
-                            to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
-                            body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
+                        if (req.body.sender_phone !== null || undefined || '') {
+                            twilioClient.messages.create({
+                                from: process.env.TWILIO_PHONE_NO,
+                                to: parsePhoneNumber(req.body.sender_phone).format("E.164"),
+                                body: `Hi! ${req.body.receiver_name}, ${req.body.sender_name} has send you a revert video message for your gift please click on the below link to view:
                             ${process.env.RECEPIENT_URL}?${req.body.order_id}/receipient`
-                        });
+                            });
+                        }
                     }
                 }
             })
